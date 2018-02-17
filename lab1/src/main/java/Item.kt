@@ -1,0 +1,1 @@
+class Item <T> (var data: T, var next: Item<T>?)
