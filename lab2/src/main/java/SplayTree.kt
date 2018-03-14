@@ -11,7 +11,7 @@ class SplayTree<T : Comparable<T>> {
         while (current != null) {
             val compare = value.compareTo(current.data)
             if (compare == 0) {
-                throw IllegalArgumentException("Element is exist")
+                throw NullPointerException("Element is exist")
             } else if (compare < 0) {
                 val newNode = Node(value, null, null, current)
                 if (current.right != null) {
@@ -44,19 +44,16 @@ class SplayTree<T : Comparable<T>> {
         true
     }
 
-    fun find(value: T): Boolean {
-        val founded = findAndDoSmth(value) { it }
-        return founded != null
-    }
+    fun find(value: T) = findAndDoSmth(value) { splay(it) }
 
     private fun handleLeft(node: Node<T>): Node<T> {//найти замену представленной ноды по её левому ребёнку
         val left = node.left!!
         var preCur: Node<T>? = node
         var cur: Node<T> = left
-        if(cur.right==null){
+        if (cur.right == null) {
             preCur?.left = cur.left
             cur.left = null
-        }else {
+        } else {
             while (cur.right != null) {
                 preCur = cur
                 cur = cur.right!!
@@ -71,10 +68,10 @@ class SplayTree<T : Comparable<T>> {
         val right = node.right!!
         var preCur: Node<T>? = node
         var cur: Node<T> = right
-        if(cur.left==null){
+        if (cur.left == null) {
             preCur?.right = cur.right
             cur.right = null
-        }else {
+        } else {
             while (cur.left != null) {
                 preCur = cur
                 cur = cur.left!!
@@ -89,13 +86,11 @@ class SplayTree<T : Comparable<T>> {
         val parent = node.parent
         if (parent == null) {
             root = newNode
-        }else {
+        } else {
             if (node.equals(parent.left)) {
                 parent.left = newNode
-            } else if (node.equals(parent.right)) {
-                parent.right = newNode
             } else {
-                throw Exception("Parent not contained his child ¯\\_(ツ)_/¯")
+                parent.right = newNode
             }
         }
         node.right?.parent = newNode
@@ -107,8 +102,8 @@ class SplayTree<T : Comparable<T>> {
         node.right = null
     }
 
-    private fun <F> findAndDoSmth(value: T, doSmth: (Node<T>) -> F): F? {
-        var current: Node<T>? = root ?: return null
+    private fun <F> findAndDoSmth(value: T, doSmth: (Node<T>) -> F): F {
+        var current: Node<T>? = root ?: throw NullPointerException()
         while (current != null) {
             val compare = value.compareTo(current.data)
             if (compare == 0) {
@@ -119,7 +114,58 @@ class SplayTree<T : Comparable<T>> {
                 current = current.left
             }
         }
-        return null
+        throw NullPointerException()
+    }
+
+    private fun splay(node: Node<T>, isFirst: Boolean = true): Node<T> {
+        if(isFirst){
+            root = node
+        }
+        node.parent ?: return node
+        val parent = node.parent!!
+        val gran = parent.parent
+        if (gran == null) {
+            rotate(node, parent)
+            return node
+        } else {
+            val isZigZig = parent.equals(gran.left) && node.equals(parent.left) || parent.equals(gran.right) && node.equals(parent.right)
+            if (isZigZig) {
+                rotate(parent, gran)
+                rotate(node, parent)
+            }
+            else {
+                rotate(node, parent)
+                rotate(node, gran)
+            }
+            return splay(node, false)
+        }
+    }
+
+    private fun keepParent(node: Node<T>) {
+        node.left?.parent = node
+        node.right?.parent = node
+    }
+
+    private fun rotate(child: Node<T>, parent: Node<T>) {
+        val gran = parent.parent
+        if (gran != null) {
+            if (parent.equals(gran.left)) {
+                gran.left = child
+            } else {
+                gran.right = child
+            }
+        }
+        if (child.equals(parent.left)) {
+            parent.left = child.right
+            child.right = parent
+        } else {
+            parent.right = child.left
+            child.left = parent
+        }
+
+        keepParent(child)
+        keepParent(parent)
+        child.parent = gran
     }
 
     fun <F> forEach(handle: (Node<T>) -> F) = recursive(root, handle)
