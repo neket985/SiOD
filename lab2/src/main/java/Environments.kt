@@ -1,6 +1,6 @@
 enum class Environments(val command: String, val dialog: (SplayTree<Int>) -> Boolean) {
     home("home", {
-        println("Введите одну из доступных операций (add, find, delete, show, quit)")
+        println("Введите одну из доступных операций (add, find, delete, show, print, quit)")
         val read = readLine()
         val readedEnv = envByCommand[read]
         if (readedEnv == null) {
