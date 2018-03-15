@@ -1,3 +1,7 @@
+import guru.nidi.graphviz.engine.Format
+import guru.nidi.graphviz.engine.Graphviz
+import java.io.File
+
 class SplayTree<T : Comparable<T>> {
     var root: Node<T>? = null
 
@@ -118,7 +122,7 @@ class SplayTree<T : Comparable<T>> {
     }
 
     private fun splay(node: Node<T>, isFirst: Boolean = true): Node<T> {
-        if(isFirst){
+        if (isFirst) {
             root = node
         }
         node.parent ?: return node
@@ -132,8 +136,7 @@ class SplayTree<T : Comparable<T>> {
             if (isZigZig) {
                 rotate(parent, gran)
                 rotate(node, parent)
-            }
-            else {
+            } else {
                 rotate(node, parent)
                 rotate(node, gran)
             }
@@ -175,6 +178,20 @@ class SplayTree<T : Comparable<T>> {
         recursive(node.right, handle)
         handle(node)
         recursive(node.left, handle)
+    }
+
+    fun print(name: String) {
+        val builder = StringBuilder()
+        builder.appendln("digraph graphName{")
+        forEach {
+            if(it.parent!=null) {
+                builder.appendln("${it.parent!!.data}->${it.data};")
+            }
+        }
+        builder.appendln("}")
+        val treeJson = builder.toString()
+        Graphviz.fromString(treeJson).render(Format.PNG)
+                .toFile(File("/Users/nikitos/IdeaProjects/SiOD/lab2/src/main/resources/$name.png"))
     }
 
     override fun toString(): String {

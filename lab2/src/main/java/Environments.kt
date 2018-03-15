@@ -58,6 +58,13 @@ enum class Environments(val command: String, val dialog: (SplayTree<Int>) -> Boo
         currentEnv = home
         true
     }),
+    print("print", { tree ->
+        println("Введите название файла, в который запишется изображение дерева")
+        val name = readLine()!!
+        tree.print(name)
+        currentEnv = home
+        true
+    }),
     quit("quit", {
         println("До скорых встреч!")
         false
