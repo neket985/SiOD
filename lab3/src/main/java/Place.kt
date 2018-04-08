@@ -1,0 +1,1 @@
+data class Place (val worksTime: Int, val redirectTime: Int)

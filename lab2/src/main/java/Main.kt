@@ -1,11 +1,3 @@
-import guru.nidi.graphviz.engine.Format
-import guru.nidi.graphviz.engine.Graphviz
-import guru.nidi.graphviz.model.Factory
-import guru.nidi.graphviz.model.Factory.graph
-import guru.nidi.graphviz.model.LinkSource
-import guru.nidi.graphviz.model.MutableNode
-import java.io.File
-
 object Main {
     private val tree = SplayTree<Int>()
     @JvmStatic
