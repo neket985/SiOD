@@ -11,8 +11,6 @@ data class Conveyor(val placeTime: Int, val escapeTime: Int) {
         }
     }
 
-    fun addPlaces(places: List<Place>) = this.places.addAll(places)
-
     companion object {
         private val random = Random()
     }
