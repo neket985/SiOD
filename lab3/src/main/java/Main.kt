@@ -1,32 +1,43 @@
-import java.util.*
-
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
-//        while(true) {
-        print("Введите количество рабочих мест на конвейере: ")
-        val num = readLine()!!.toInt()
+        while (true) {
+            print("Введите количество рабочих мест на конвейере: ")
+            val num = readLine()!!.toInt()
 
-        val random = Random()
-        val conveyor1 = Conveyor(random.nextInt(3600), random.nextInt(3600))
-        conveyor1.randomGeneratePlaces(num)
-        val conveyor2 = Conveyor(random.nextInt(3600), random.nextInt(3600))
-        conveyor2.randomGeneratePlaces(num)
+            val (conveyor1, conveyor2) = handleTimeOfExecuting({
+                val conveyor1 = Conveyor()
+                conveyor1.randomGeneratePlaces(num)
+                val conveyor2 = Conveyor()
+                conveyor2.randomGeneratePlaces(num)
+                conveyor1 to conveyor2
+            }, { time ->
+                println("Conveyors created for ${time} millis")
+            })
 
+            val min1 = handleTimeOfExecuting({
+                bruteForceCalculate(conveyor1, conveyor2)
+            }, { time ->
+                println("Brute force calculate done for ${time} millis")
+            })
+
+            val min2 = handleTimeOfExecuting({
+                dinamicCalculate(conveyor1, conveyor2)
+            }, { time ->
+                println("Dinamic calculate done for ${time} millis")
+            })
+
+            println("Calculates sum equals: ${min1.second == min2.second}")
+            println("Calculates paths equals: ${min1.first.equals(min2.first)}")
+        }
+    }
+
+    private fun <T> handleTimeOfExecuting(hardWork: () -> T, handleTime: (Long) -> Unit): T {
         val startTime = System.currentTimeMillis()
-        val min1 = bruteForceCalculate(conveyor1, conveyor2)
+        val result = hardWork()
         val time = System.currentTimeMillis() - startTime
-        println("Brute force calculate done for ${time} millis")
-
-
-        val startTime2 = System.currentTimeMillis()
-        val min2 = dinamicCalculate(conveyor1, conveyor2)
-        val time2 = System.currentTimeMillis() - startTime2
-        println("Dinamic calculate done for ${time2} millis")
-
-        println("Calculates sum equals: ${min1.second == min2.second}")
-        println("Calculates paths equals: ${min1.first.equals(min2.first)}")
-//        }
+        handleTime(time)
+        return result
     }
 
     private fun dinamicCalculate(conveyor1: Conveyor, conveyor2: Conveyor): Pair<List<Boolean>, Int> {

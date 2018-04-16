@@ -1,6 +1,9 @@
 import java.util.*
 
 data class Conveyor(val placeTime: Int, val escapeTime: Int) {
+
+    constructor() : this(random.nextInt(3600), random.nextInt(3600))
+
     val places = mutableListOf<Place>()
 
     fun randomGeneratePlaces(placesCount: Int) {
